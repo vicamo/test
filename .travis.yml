@@ -12,18 +12,18 @@ script:
 before_deploy:
 - |
   cat .bintray.json.in | \
-    sed -e "s#@BINTRAY_PACKAGE@#$(dpkg-deb -f ${BINTRAY_FILE} package)#g" \
+    sed -e "s#@BINTRAY_PACKAGE@#binder-dkms#g" \
         -e "s#@BINTRAY_USER@#${BINTRAY_USER}#g" \
         -e "s#@BINTRAY_REPO@#${BINTRAY_REPO}#g" \
         -e "s#@BINTRAY_DESC@#${BINTRAY_DESC}#g" \
         -e "s#@GITHUB_REPO@#${TRAVIS_REPO_SLUG}#g" \
-        -e "s#@BINTRAY_VERSION@#$(dpkg-deb -f ${BINTRAY_FILE} version)#g" \
+        -e "s#@BINTRAY_VERSION@#4.14+20171208-1#g" \
         -e "s#@BINTRAY_RELEASE_DATE@#$(date -Iseconds)#g" \
         -e "s#@BINTRAY_OUTDIR@#${TRAVIS_BUILD_DIR}#g" \
-        -e "s#@BINTRAY_POOLABBR@#$(dpkg-deb -f ${BINTRAY_FILE} source | cut -c1)#g" \
+        -e "s#@BINTRAY_POOLABBR@#b#g" \
         -e "s#@BINTRAY_SUITE@#sid#g" \
         -e "s#@BINTRAY_COMPONENT@#${BINTRAY_COMPONENT}#g" \
-        -e "s#@BINTRAY_ARCH@#$(dpkg-deb -f ${BINTRAY_FILE} architecture)#g" | \
+        -e "s#@BINTRAY_ARCH@#amd64#g" | \
     tee .bintray.json
 
 deploy:
