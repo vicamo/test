@@ -1,34 +1,34 @@
+sudo: required
+service: docker
+dist: bionic
+
 env:
-  global:
-  - BINTRAY_USER=vicamo
-  - BINTRAY_REPO=test
-  - BINTRAY_DESC="test package"
-  - BINTRAY_COMPONENT=main
-  - BINTRAY_FILE=binder-dkms_4.14+20171208-1_amd64.deb
+  matrix:
+  - SUITE=bionic ARCH=amd64
+
+branches:
+  only:
+  - master
+
+addons:
+  apt:
+    packages:
+    - debootstrap
+    - fakeroot
+    - gnupg
+    - kernel-wedge
+    - postfix
+    - qemu-user-static
+    - schroot
+
+install:
+  - git clone git://kernel.ubuntu.com/ubuntu/kteam-tools ~/kteam-tools
+
+before_script:
+  - cat /proc/sys/fs/binfmt_misc/qemu-*
 
 script:
-- true
-
-before_deploy:
-- |
-  cat .bintray.json.in | \
-    sed -e "s#@BINTRAY_PACKAGE@#binder-dkms#g" \
-        -e "s#@BINTRAY_USER@#${BINTRAY_USER}#g" \
-        -e "s#@BINTRAY_REPO@#${BINTRAY_REPO}#g" \
-        -e "s#@BINTRAY_DESC@#${BINTRAY_DESC}#g" \
-        -e "s#@GITHUB_REPO@#${TRAVIS_REPO_SLUG}#g" \
-        -e "s#@BINTRAY_VERSION@#4.14+20171208-1#g" \
-        -e "s#@BINTRAY_RELEASE_DATE@#$(date -Iseconds)#g" \
-        -e "s#@BINTRAY_OUTDIR@#${TRAVIS_BUILD_DIR}#g" \
-        -e "s#@BINTRAY_POOLABBR@#b#g" \
-        -e "s#@BINTRAY_SUITE@#sid#g" \
-        -e "s#@BINTRAY_COMPONENT@#${BINTRAY_COMPONENT}#g" \
-        -e "s#@BINTRAY_ARCH@#amd64#g" | \
-    tee .bintray.json
-
-deploy:
-- provider: bintray
-  file: .bintray.json
-  user: vicamo
-  key:
-    secure: "Jpr7SCWGW/pY0WYiBQJYdK8A325TjCiWqP4GZFNHMZT18PAoObOHDUUn9guwuA3YvdVSvtqvBXRQHx5IYaeteY8slK92Efd/rBPd0neHZAJ51lvsHb3YV+jjb8xb6cyfB+EbfgXygNBnEMuLzI4imxw7muXHi67ZUbFPe+3WlrSaDgM9hvFSP0MxwbjpniMXzZODYNQwNgT2KEAKdZab2XnsjZ8m4I11VhJiAKq00vg2IULgTCiZPPy3ub8dNXqS5ec0O9Mz67JBI2paUSGqMG2lDFu2oMz5ObLgk83YSaxybcFU1L8lq1UD7qK0boq2g2Oyqys98kpbyAIFSGb+gg+AJJQdDuBNBGiZFogMOPrZfzhfLtzOzM6+Q/vYgYkssSNc6rpppzmqOHzJ4udiJqy2lENj7fDn0D2mSo8sZTPpO/4bTOtJeLGPHlhrKH/lxRb+WTjIK/Ix3yZBgsgm3xTcMuZ/sCj/SgT1bX30M8TRG8e0ZBxkq/lfRwYsFWM1S1opZMuGWH9d2ijkKpZ8E4W/DlwkMv6AQIxJ/2iFDcPgb8SMwJYGXH7PUpBV7RM7xUr/ZIxzYlPK+fmxXEfF49s062ka6swXa9xEvemA/tiTsV3zQF6htNuDonkiKmnh0IfYijja4PnYrnxV/58dChcttBd6J0kr74sx20bGxMs="
+  - sudo mkdir -p /usr3/chroots
+  - sudo ~/kteam-tools/chroot-setup/make_chroot ${SUITE} ${ARCH}
+  - sudo tar -C /usr3/chroots/${SUITE}-${ARCH} -zcpf ${TRAVIS_BUILD_DIR}/rootfs.tar.gz .
+  - docker build -t vicamo/kteam-tools-chroots:${SUITE}-${ARCH} ${TRAVIS_BUILD_DIR}
