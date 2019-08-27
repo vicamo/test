@@ -4,7 +4,41 @@ dist: bionic
 
 env:
   matrix:
+  - SUITE=trusty ARCH=amd64
+  - SUITE=trusty ARCH=arm64
+  - SUITE=trusty ARCH=armhf
+  - SUITE=trusty ARCH=i386
+  - SUITE=trusty ARCH=powerpc
+  - SUITE=trusty ARCH=ppc64el
+  - SUITE=trusty ARCH=s390x
+  - SUITE=xenial ARCH=amd64
+  - SUITE=xenial ARCH=arm64
+  - SUITE=xenial ARCH=armhf
+  - SUITE=xenial ARCH=i386
+  - SUITE=xenial ARCH=powerpc
+  - SUITE=xenial ARCH=ppc64el
+  - SUITE=xenial ARCH=s390x
   - SUITE=bionic ARCH=amd64
+  - SUITE=bionic ARCH=arm64
+  - SUITE=bionic ARCH=armhf
+  - SUITE=bionic ARCH=i386
+  - SUITE=bionic ARCH=powerpc
+  - SUITE=bionic ARCH=ppc64el
+  - SUITE=bionic ARCH=s390x
+  - SUITE=disco ARCH=amd64
+  - SUITE=disco ARCH=arm64
+  - SUITE=disco ARCH=armhf
+  - SUITE=disco ARCH=i386
+  - SUITE=disco ARCH=powerpc
+  - SUITE=disco ARCH=ppc64el
+  - SUITE=disco ARCH=s390x
+  - SUITE=eoan ARCH=amd64
+  - SUITE=eoan ARCH=arm64
+  - SUITE=eoan ARCH=armhf
+  - SUITE=eoan ARCH=i386
+  - SUITE=eoan ARCH=powerpc
+  - SUITE=eoan ARCH=ppc64el
+  - SUITE=eoan ARCH=s390x
 
 branches:
   only:
