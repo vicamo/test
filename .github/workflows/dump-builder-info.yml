@@ -1,0 +1,72 @@
+---
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  dump-builder-info:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    name: Dump ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: |
+          echo "::group::uname -a"
+          uname -a | tee uname_a
+          echo "::endgroup::"
+
+          echo "::group::/etc/passwd"
+          cat /etc/passwd | tee passwd
+          echo "::endgroup::"
+
+          echo "::group::/etc/group"
+          cat /etc/group | tee group
+          echo "::endgroup::"
+
+          echo "::group::id -a"
+          id -a | tee id_a
+          echo "::endgroup::"
+
+          echo "::group::df"
+          df | tee df
+          echo "::endgroup::"
+
+          echo "::group::ls -alR"
+          ls -alR | tee ls.alR
+          echo "::endgroup::"
+
+          echo "::group::ls -alR ${HOME}"
+          ls -alR ${HOME} | tee ls.alR-home
+          echo "::endgroup::"
+
+          echo "::group::dpkg --get-selections"
+          dpkg --get-selections | tee dpkg.selections
+          echo "::endgroup::"
+
+          echo "::group::env"
+          env | tee env
+          echo "::endgroup::"
+
+          echo "::group::systemctl status --all"
+          systemctl status --all | tee systemctl.status-all
+          echo "::endgroup::"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}_dump-builder-info
+          retention-days: 7
+          path: |
+            uname_a
+            passwd
+            group
+            id_a
+            df
+            ls.alR
+            dpkg.selections
+            env
+            systemctl.status-all
